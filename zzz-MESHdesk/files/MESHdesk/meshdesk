@@ -1,5 +1,5 @@
 config internet 'internet1'
-    option disabled '0'
+    option disabled '1'
     option dns 'cloud.radiusdesk.com'
     option url 'cake3/rd_cake/nodes/get-config-for-node.json'
     option status_url 'cake3/rd_cake/node-reports/submit_report.json'
