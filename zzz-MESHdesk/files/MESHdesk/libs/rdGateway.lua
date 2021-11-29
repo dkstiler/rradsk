@@ -162,13 +162,21 @@ function rdGateway.__dhcpGwEnable(self,network,start,limit)
 	limit		= limit or 200
 	local leasetime   = '12h';
 	local dns_servers = {};
+	local ignore    = 0;
 	
 	local dtls  = self.config_settings.gateway_details;
 	if(dtls)then
 	    if(dtls[network] ~= nil)then
 	        start       = dtls[network]['pool_start'];
 	        limit       = dtls[network]['pool_limit'];
-	        leasetime   = tostring(dtls[network]['leasetime'])..'h';
+	        
+	        if(dtls[network]['leasetime'] ~= nil)then
+	            leasetime   = tostring(dtls[network]['leasetime'])..'h';
+	        end
+	        if(dtls[network]['ignore'] ~= nil)then
+	            leasetime   = dtls[network]['ignore'];
+	        end
+	        
 	        if(dtls[network]['dns_1'] ~= nil)then
 	            table.insert(dns_servers, dtls[network]['dns_1'])
 	        end
@@ -183,12 +191,13 @@ function rdGateway.__dhcpGwEnable(self,network,start,limit)
         has_dns_servers = true;
     end
 	
-	self.l_uci.cursor():set('dhcp','lan','ignore',1)
-	self.l_uci.cursor():set('dhcp',network,'dhcp')
-	self.l_uci.cursor():set('dhcp',network,'interface', network)
-	self.l_uci.cursor():set('dhcp',network,'start', start)
-	self.l_uci.cursor():set('dhcp',network,'limit', limit)
-	self.l_uci.cursor():set('dhcp',network,'leasetime',leasetime)
+	self.l_uci.cursor():set('dhcp','lan','ignore',1);
+	self.l_uci.cursor():set('dhcp',network,'dhcp');
+	self.l_uci.cursor():set('dhcp',network,'interface', network);
+	self.l_uci.cursor():set('dhcp',network,'start', start);
+	self.l_uci.cursor():set('dhcp',network,'limit', limit);
+	self.l_uci.cursor():set('dhcp',network,'leasetime',leasetime);
+	self.l_uci.cursor():set('dhcp',network,'ignore',ignore);
 	
 	if(has_dns_servers)then
 	    self.l_uci.cursor():set('dhcp',network,'server',dns_servers);
